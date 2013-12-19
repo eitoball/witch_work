@@ -33,6 +33,10 @@ defmodule WitchWork.Server do
     { :reply, response.body, api_key }
   end
 
+  def handle_call({:read_room, room_id}, _from, api_key) do
+    do_get("/rooms/#{room_id}", api_key)
+  end
+
   def handle_call({:update_room, attributes}, _from, api_key) do
     body = attributes |> Enum.map(fn { k, v } -> "#{k}=#{v}" end) |> Enum.join("&")
     response = put("/rooms", body, [{:"X-ChatWorkToken", api_key}, {:"Content-Type", "application/x-www-form-urlencoded"}])
