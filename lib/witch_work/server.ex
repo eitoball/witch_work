@@ -42,9 +42,8 @@ defmodule WitchWork.Server do
     response = put("/rooms", body, [{:"X-ChatWorkToken", api_key}, {:"Content-Type", "application/x-www-form-urlencoded"}])
     { :reply, response.body, api_key }
   end
-  end
 
-  def handle_call({:delete_room, room_id}, _from, api_key) do
+  def handle_call({:leave_room, room_id}, _from, api_key) do
     do_delete_room(room_id, "leave", api_key)
   end
 
