@@ -56,6 +56,10 @@ defmodule WitchWork.Server do
     { :reply, response.body, api_key }
   end
 
+  def handle_call({:get_room_members, room_id}, _from, api_key) do
+    do_get("/rooms/#{room_id}/members", api_key)
+  end
+
   def process_url(url) do
     "https://api.chatwork.com/v1" <> url
   end
