@@ -56,8 +56,24 @@ defmodule WitchWork.Server do
     { :reply, response.body, api_key }
   end
 
-  def handle_call({:get_room_members, room_id}, _from, api_key) do
+  def handle_call({:read_room_members, room_id}, _from, api_key) do
     do_get("/rooms/#{room_id}/members", api_key)
+  end
+
+  def handle_call({:update_room_members, room_id, attributes}, _from, api_key) do
+    body = attributes |> Enum.map(fn { k, v } -> "#{k}=#{v}" end) |> Enum.join("&")
+    response = put("/rooms/#{room_id}/members", body, [{:"X-ChatWorkToken", api_key}, {:"Content-Type", "application/x-www-form-urlencoded"}])
+    { :reply, response.body, api_key }
+  end
+
+  def handle_call({:create_message, room_id, message}, _from, api_key) do
+    body = "body=#{message}"
+    response = post("/rooms/#{room_id}/messages", body, [{:"X-ChatWorkToken", api_key}, {:"Content-Type", "application/x-www-form-urlencoded"}])
+    { :reply, response.body, api_key }
+  end
+
+  def handle_call({:read_message, room_id, message_id}, _from, api_key) do
+    do_get("/rooms/#{room_id}/messages/#{message_id}", api_key)
   end
 
   def process_url(url) do
