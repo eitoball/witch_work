@@ -8,7 +8,7 @@
 $ git clone git@github.com:eitoball/witch_work.git
 $ cd witch_work
 $ iex -S mix
-iex(1)> {:ok, pid} = :gen_server.start_link(WitchWork.Server ["Your API key"], [])
-iex(2)> :gen_server.call(:me) # for /me
-iex(3)> :gen_server.call({:create_message, {room_id}, "Hello ChatWork!") # for /rooms/{room_id}/messages
+iex(1)> {:ok, pid} = WitchWork.Server.start_link("Your API key")
+iex(2)> rooms = WitchWork.Server.rooms(pid) # for /rooms
+iex(3)> tasks = WitchWork.Server.tasks(pid, room_id) # for /rooms/{room_id}/tasks
 ```

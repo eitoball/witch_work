@@ -2,6 +2,18 @@ defmodule WitchWork.Server do
   use GenServer.Behaviour
   use HTTPotion.Base
 
+  def start_link(api_key) do
+    :gen_server.start_link(__MODULE__, [api_key], [])
+  end
+
+  def rooms(pid) do
+    :gen_server.call(pid, :rooms)
+  end
+
+  def tasks(pid, room_id) do
+    :gen_server.call(pid, {:tasks, room_id})
+  end
+
   def init([api_key]) do
     start
     { :ok, api_key }
@@ -74,6 +86,20 @@ defmodule WitchWork.Server do
 
   def handle_call({:read_message, room_id, message_id}, _from, api_key) do
     do_get("/rooms/#{room_id}/messages/#{message_id}", api_key)
+  end
+
+  def handle_call({:tasks, room_id}, _from, api_key) do
+    do_get("/rooms/#{room_id}/tasks", api_key)
+  end
+
+  def handle_call({:create_task, room_id, attributes}, _from, api_key) do
+    body = attributes |> Enum.map(fn { k, v } -> "#{k}=#{v}" end) |> Enum.join("&")
+    response = post("/rooms/#{room_id}/tasks", body, [{:"X-ChatWorkToken", api_key}, {:"Content-Type", "application/x-www-form-urlencoded"}])
+    { :reply, response.body, api_key }
+  end
+
+  def handle_call({:read_task, room_id, task_id}, _from, api_key) do
+    do_get("/rooms/#{room_id}/tasks/#{task_id}", api_key)
   end
 
   def process_url(url) do
